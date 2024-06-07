@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Your Cart{% endblock %}
+
+{% block content %}
+<h1 class="mt-4">Your Cart</h1>
+<div class="row">
+    {% for item in cart.cartitem_set.all %}
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="row no-gutters">
+                <div class="col-md-4">
+                    <img src="{{ item.product.image.url }}" class="card-img" alt="{{ item.product.name }}">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.product.name }}</h5>
+                        <p class="card-text">Quantity: {{ item.quantity }}</p>
+                        <p class="card-text">Price: ${{ item.product.price }}</p>
+                        <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-danger">Remove</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="total text-right">
+    <p>Total: ${{ cart.get_total_price }}</p>
+</div>
+<div class="checkout-btn text-right">
+    <a href="{% url 'checkout_shipping' %}" class="btn btn-primary">Proceed to Checkout</a>
+</div>
+{% endblock %}

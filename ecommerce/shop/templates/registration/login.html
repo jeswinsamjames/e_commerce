@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="login-form">
+                <h2 class="text-center mb-4">Login</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        Invalid username or password. Please try again.
+                    </div>
+                    {% endif %}
+                    <div class="fields" style="margin: 70px; margin-left: 90px; align-items: center;">
+
+                    
+                    <div class="form-group">
+                        {{ form.username.label_tag }}
+                        {{ form.username }}
+                    </div>
+                    <div class="form-group ml-1">
+                        {{ form.password.label_tag }}
+                        {{ form.password }}
+                    </div>
+                </div>
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                </form>
+                <div class="text-center mt-3">
+                    <a href="{% url 'register' %}">Click here to Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

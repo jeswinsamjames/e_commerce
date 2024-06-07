@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Payment Information{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Payment Information</h1>
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.card_name.label_tag }}
+            {{ form.card_name }}
+            <div class="invalid-feedback">
+                Please provide the name on your card.
+            </div>
+        </div>
+        <div class="form-group">
+            {{ form.card_number.label_tag }}
+            {{ form.card_number }}
+            <div class="invalid-feedback">
+                Please provide a valid card number.
+            </div>
+        </div>
+        <div class="form-group">
+            {{ form.expiration_date.label_tag }}
+            {{ form.expiration_date }}
+            <div class="invalid-feedback">
+                Please provide the card's expiration date.
+            </div>
+        </div>
+        <div class="form-group">
+            {{ form.cvv.label_tag }}
+            {{ form.cvv }}
+            <div class="invalid-feedback">
+                Please provide the card's CVV.
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block mt-4">Place Order</button>
+    </form>
+</div>
+
+<style>
+    .container {
+        max-width: 600px;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-control {
+        border-radius: 0.25rem;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+</style>
+
+<script>
+    // Example JavaScript for disabling form submissions if there are invalid fields
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}

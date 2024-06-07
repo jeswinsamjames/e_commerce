@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+
+{% block title %}Product List{% endblock %}
+
+{% block content %}
+<h1>Products</h1>
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description }}</p>
+                <p class="card-text"><strong>${{ product.price }}</strong></p>
+                
+                <!-- Display star rating -->
+                <!-- Display star rating -->
+                <div class="rating-stars">
+                    {% for i in product.full_stars|to_range %}
+                        <i class="fas fa-star" data-product-id="{{ product.id }}" data-type="full" data-rating="{{ i }}"></i>
+                    {% endfor %}
+                    {% if product.half_star %}
+                        <i class="fas fa-star-half-alt" data-product-id="{{ product.id }}" data-type="half" data-rating="0.5"></i>
+                    {% endif %}
+                    {% for i in product.empty_stars|to_range %}
+                        <i class="far fa-star" data-product-id="{{ product.id }}" data-type="empty" data-rating="{{ i }}"></i>
+                    {% endfor %}
+                </div>
+                
+
+
+                <!-- Display like/dislike icons -->
+                <div class="like-dislike mt-2">
+                    <i class="fas fa-thumbs-up" data-product-id="{{ product.id }}" data-type="like"></i>
+                    <i class="fas fa-thumbs-down ml-2" data-product-id="{{ product.id }}" data-type="dislike"></i>
+                </div>
+
+                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary mt-3">Add to Cart</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<style>
+    .like-dislike i {
+        color: black; /* Default color for inactive icons */
+    }
+    .like-dislike i.active {
+        color: blue; /* Color for active icons */
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to handle like/dislike click
+        function handleFeedback(element, type) {
+            var productId = element.getAttribute('data-product-id');
+            fetch(`/feedback/${productId}/${type}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Toggle active class for the clicked element
+                    element.classList.toggle('active');
+                    // Reset active class for the other element (if any)
+                    var otherType = type === 'like' ? 'dislike' : 'like';
+                    var otherElement = document.querySelector(`.like-dislike i[data-type="${otherType}"][data-product-id="${productId}"]`);
+                    if (otherElement) {
+                        otherElement.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        // Add click event listeners to like and dislike icons
+        document.querySelectorAll('.like-dislike i').forEach(function(element) {
+            element.addEventListener('click', function() {
+                var type = this.getAttribute('data-type');
+                handleFeedback(this, type);
+            });
+        });
+
+       
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.rating-stars i').forEach(function(element) {
+            element.addEventListener('click', function() {
+                var productId = this.getAttribute('data-product-id');
+                var ratingType = this.getAttribute('data-type');
+                var ratingValue = parseFloat(this.getAttribute('data-rating'));
+
+                // Send a POST request to the product_rating endpoint
+                fetch(`/rating/${productId}/${ratingValue}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Handle success response (e.g., update UI)
+                        console.log('Rating submitted successfully.');
+                    } else {
+                        // Handle error response (e.g., display error message)
+                        console.error('Error submitting rating:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting rating:', error);
+                });
+            });
+        });
+    });
+</script>
+
+
+
+
+{% endblock %}
